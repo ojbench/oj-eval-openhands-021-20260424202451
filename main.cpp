@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <set>
 using namespace std;
 
 int main() {
@@ -24,28 +23,27 @@ int main() {
     long long count = 0;
     
     // For each point as left boundary
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n - 1; i++) {
         int y1 = points[i].second;
-        
-        // Maintain multiset of y-coordinates for points between i and j
-        multiset<int> middle_ys;
         
         // For each point as right boundary
         for (int j = i + 1; j < n; j++) {
             int y2 = points[j].second;
             
-            // Check if this forms a valid rectangle (y2 > y1)
-            if (y2 > y1) {
-                // Check if any point in middle_ys has y in [y1, y2]
-                auto it = middle_ys.lower_bound(y1);
-                if (it == middle_ys.end() || *it > y2) {
-                    // No point in range [y1, y2]
-                    count++;
+            // Only consider if y2 > y1
+            if (y2 <= y1) continue;
+            
+            // Check if any point between i and j (in x-order) has y in [y1, y2]
+            bool valid = true;
+            for (int k = i + 1; k < j; k++) {
+                int yk = points[k].second;
+                if (yk >= y1 && yk <= y2) {
+                    valid = false;
+                    break;
                 }
             }
             
-            // Add current point to middle set for next iterations
-            middle_ys.insert(y2);
+            if (valid) count++;
         }
     }
     
